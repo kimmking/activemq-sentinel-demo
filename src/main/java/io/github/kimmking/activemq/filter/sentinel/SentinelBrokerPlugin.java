@@ -11,6 +11,7 @@ public class SentinelBrokerPlugin implements BrokerPlugin {
         sentinelBroker.setRecvQps(this.getRecvQps());
         sentinelBroker.setSendQpsPerQueue(this.getSendQpsPerQueue());
         sentinelBroker.setRecvQpsPerQueue(this.getRecvQpsPerQueue());
+        sentinelBroker.setWaitTime(this.getWaitTime());
         sentinelBroker.init();
         return sentinelBroker;
     }
@@ -53,5 +54,14 @@ public class SentinelBrokerPlugin implements BrokerPlugin {
         this.recvQpsPerQueue = recvQpsPerQueue;
     }
 
+    private int waitTime = 0;
+
+    public int getWaitTime() {
+        return waitTime;
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
+    }
 
 }

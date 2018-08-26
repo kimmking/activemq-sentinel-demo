@@ -112,7 +112,7 @@ public class TestReceiver {
 						System.out.println((times[0] - times[1]) + " -> " +((a+1)*1000.0)/(times[0] - times[2]));
 						
 					}
-					if(a > count - 1){
+					if(a > 1){
 						System.out.println("onMessage " + a + " message for " + (System.currentTimeMillis()-times[2])/1000.0 + " s");
 					}
 					

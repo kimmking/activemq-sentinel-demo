@@ -19,8 +19,8 @@ public class SentinelBroker extends BrokerFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(SentinelBroker.class);
 
-    public final String ACTIVEMQ_SEND   = "ACTIVEMQ_SEND";
-    public final String ACTIVEMQ_PULL   = "ACTIVEMQ_PULL";
+    public static final String ACTIVEMQ_SEND   = "ACTIVEMQ_SEND";
+    public static final String ACTIVEMQ_PULL   = "ACTIVEMQ_PULL";
 
     private List<FlowRule> rules = new ArrayList<FlowRule>();
     private Map<String,FlowRule> ruleMap = new HashMap<String, FlowRule>();
@@ -60,7 +60,9 @@ public class SentinelBroker extends BrokerFilter {
             super.send(producerExchange, messageSend);
         } catch (BlockException ex) {
             logger.error("SentinelBroker Send Blocked.", ex);
-            processException(ex);
+            if(processException(ex)){
+                super.send(producerExchange, messageSend);
+            }
         } finally {
             if (entryQueue != null) {
                 entryQueue.exit();
@@ -86,7 +88,9 @@ public class SentinelBroker extends BrokerFilter {
             super.preProcessDispatch(messageDispatch);
         } catch (BlockException ex) {
             logger.error("SentinelBroker dispatch Blocked.", ex);
-            processException(ex);
+            if(processException(ex)){
+                super.preProcessDispatch(messageDispatch);
+            }
         } finally {
             if (entryQueue != null) {
                 entryQueue.exit();
@@ -98,11 +102,16 @@ public class SentinelBroker extends BrokerFilter {
         }
     }
 
-    private void processException(BlockException ex){
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    private boolean processException(BlockException ex){
+        if(this.getWaitTime()>0) {
+            try {
+                Thread.sleep(this.getWaitTime());
+                return true;
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            throw new RuntimeException(ex);
         }
     }
 
@@ -141,5 +150,15 @@ public class SentinelBroker extends BrokerFilter {
 
     public void setRecvQpsPerQueue(int recvQpsPerQueue) {
         this.recvQpsPerQueue = recvQpsPerQueue;
+    }
+
+    private int waitTime = 100;
+
+    public int getWaitTime() {
+        return waitTime;
+    }
+
+    public void setWaitTime(int waitTime) {
+        this.waitTime = waitTime;
     }
 }

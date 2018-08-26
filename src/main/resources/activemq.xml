@@ -27,10 +27,11 @@
         <plugins>
             <bean xmlns="http://www.springframework.org/schema/beans" id="sentinelPlugin"
                   class="io.github.kimmking.activemq.filter.sentinel.SentinelBrokerPlugin">
-                <property name="sendQps" value="100" />
+                <property name="sendQps" value="2" />
                 <property name="recvQps" value="2" />
-                <property name="sendQpsPerQueue" value="100" />
+                <property name="sendQpsPerQueue" value="2" />
                 <property name="recvQpsPerQueue" value="2" />
+                <property name="waitTime" value="200" />
             </bean>
         </plugins>
  
